@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="premium-final.css">
   <link rel="stylesheet" href="vehicle-first.css">
   <link rel="stylesheet" href="admin-v47.css">
+  <link rel="stylesheet" href="admin-v410.css">
   <link rel="stylesheet" href="info-parkir-v48.css">
   <link rel="stylesheet" href="news-admin-v49.css">
   <script src="config.js"></script>
@@ -25,6 +26,7 @@
   <script src="vehicle-first.js" defer></script>
   <script src="info-parkir-v48.js" defer></script>
   <script src="news-admin-v49.js" defer></script>
+  <script src="admin-v410.js" defer></script>
 </head>
 <body>
 <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -243,7 +245,7 @@
         </div>
         <div class="admin-banner" id="adminBanner">Data tersinkronisasi jika terhubung Supabase.</div>
         <div class="admin-summary" aria-label="Ringkasan zona petugas">
-          <div class="admin-summary-card"><span>Area yang dikelola</span><strong id="myZones">—</strong></div>
+          <div class="admin-summary-card"><span>Zona tugas saya</span><strong id="myZones">—</strong></div>
           <div class="admin-summary-card"><span>Slot motor tersisa</span><strong id="myMotorFree">—</strong></div>
           <div class="admin-summary-card"><span>Slot mobil tersisa</span><strong id="myCarFree">—</strong></div>
         </div>
@@ -275,7 +277,7 @@
             <p class="admin-note">Perubahan kendaraan tetap dicatat manual oleh petugas. Website tidak menggunakan sensor otomatis.</p>
           </section>
           <section id="ps47-panel-kapasitas" class="ps47-panel hidden" role="tabpanel" aria-labelledby="ps47-tab-kapasitas" tabindex="0" data-ps47-pane="kapasitas">
-            <div class="ps47-panel-title"><div><span class="ps47-panel-kicker">02 / DATA FISIK</span><h2>Update Kapasitas Parkir</h2><p>Pilih zona, masukkan kapasitas yang sudah diverifikasi di lapangan, dan tulis alasan perubahannya.</p></div><span class="ps47-readonly-note">Hanya zona berwenang</span></div>
+            <div class="ps47-panel-title"><div><span class="ps47-panel-kicker">02 / DATA FISIK</span><h2>Update Kapasitas Parkir</h2><p>Pilih zona dan isi kapasitas yang telah diverifikasi. Riwayat perubahan dicatat otomatis.</p></div><span class="ps47-readonly-note">Hanya zona berwenang</span></div>
             <div class="ps47-guidance"><svg class="ui-icon" aria-hidden="true"><use href="#ps-help"></use></svg><div><strong>Kapasitas ≠ slot kosong.</strong><span>Pengubahan kapasitas tidak mengaktifkan zona. Slot kosong tetap “Belum dihitung” hingga petugas melakukan hitungan awal.</span></div></div>
             <div class="ps47-capacity-grid" id="adminCapacityZones"></div>
           </section>
