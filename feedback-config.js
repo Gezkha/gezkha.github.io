@@ -1,3 +1,2 @@
-// UI ParkSense V4.5 — alamat formulir kritik & saran (PUBLIK, bukan data rahasia)
-// Isi dengan tautan Google Form tim, misalnya: 'https://forms.gle/CONTOH'
+// Tautan formulir publik resmi tim ParkSense. Isi jika formulir sudah tersedia.
 window.PARKSENSE_FEEDBACK_FORM_URL = '';
