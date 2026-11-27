@@ -8,13 +8,13 @@ window.ParkSenseAdminV410=(()=>{
   for(const z of zs){
    const key=code(z);
    if(!all.has(key))all.set(key,{code:key,name:FACULTIES.find(x=>x.code===key)?.name||z.faculty||key,zones:[],legacy:[]});
-   const isOld=children(z,zs)&&z.operational===false&&z.counts_initialized===false;
+   const isOld=children(z,zs);
    all.get(key)[isOld?'legacy':'zones'].push(z);
   }
   return [...all.values()];
  }
  const header=g=>'<header class="ps410-faculty"><img src="'+makaraSrc(g.code)+'" alt="" width="44" height="44"><div><small>FAKULTAS / KAWASAN</small><h3>'+safe(g.name)+'</h3><p>'+nf(g.zones.length)+' zona tugas</p></div></header>';
- const legacy=g=>g.legacy.length?'<details class="ps410-legacy" data-ps410-panel="old:'+safe(g.code)+'"><summary>'+nf(g.legacy.length)+' zona gabungan lama · lihat informasi</summary><p>Ditampilkan terpisah agar tidak ada pencatatan ganda. Data tidak dihapus.</p>'+g.legacy.map(z=>'<p><b>'+safe(z.code)+'</b> · '+safe(capacityLabel(z))+' · belum operasional</p>').join('')+'</details>':'';
+ const legacy=g=>g.legacy.length?'<details class="ps410-legacy" data-ps410-panel="old:'+safe(g.code)+'"><summary>'+nf(g.legacy.length)+' zona gabungan lama · lihat informasi</summary><p>Ditampilkan terpisah agar tidak ada pencatatan ganda. Data tidak dihapus.</p>'+g.legacy.map(z=>'<p><b>'+safe(z.code)+'</b> · '+safe(capacityLabel(z))+(z.operational&&z.counts_initialized?' · aktif di database, minta pengelola meninjau':' · belum beroperasi')+'</p>').join('')+'</details>':'';
  const label=z=>String(z.code)===code(z)||/^area fakultas/i.test(String(z.name))?'Zona gabungan '+code(z):z.name;
  function vehicle(g,zs){
   return '<section class="ps410-group">'+header(g)+'<div class="ps410-cards">'+g.zones.map(z=>{
