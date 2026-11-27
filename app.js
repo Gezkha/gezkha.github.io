@@ -299,14 +299,14 @@ function renderFmipaActivation(zs){
  panel.classList.toggle('hidden',!canInit);
  if(!canInit){panel.innerHTML='';return;}
  const caps={front:cap(entries[0],'motor'),geoMotor:cap(entries[1],'motor'),geoCar:cap(entries[1],'mobil'),gk2Car:cap(entries[2],'mobil')};
- panel.innerHTML=`<div class="activation-title"><div><span class="activation-kicker">KHUSUS PETUGAS FMIPA · SETUP SATU KALI</span><h3>Aktifkan 3 zona parkir FMIPA</h3><p>Isi kendaraan yang sedang terparkir tepat saat mulai bertugas. Ketiganya akan aktif bersamaan. Sebelum itu, pengunjung hanya melihat status belum beroperasi.</p></div><span class="status-badge pending">Belum aktif</span></div>
+ panel.innerHTML=`<details class="ps410-special" data-ps410-panel="FMIPA"><summary>Aktivasi awal FMIPA (3 zona sekaligus)</summary><div class="activation-title"><div><span class="activation-kicker">KHUSUS PETUGAS FMIPA · SETUP SATU KALI</span><h3>Aktifkan 3 zona parkir FMIPA</h3><p>Isi kendaraan yang sedang terparkir tepat saat mulai bertugas. Ketiganya akan aktif bersamaan. Sebelum itu, pengunjung hanya melihat status belum beroperasi.</p></div><span class="status-badge pending">Belum aktif</span></div>
  <form id="fmipaActivateForm" class="activation-form">
  <label>Motor terisi · Depan FMIPA <small>Maks. ${caps.front}</small><input name="frontMotor" type="number" min="0" max="${caps.front}" step="1" required placeholder="Jumlah motor saat mulai"></label>
  <label>Motor terisi · Geografi <small>Maks. ${caps.geoMotor}</small><input name="geoMotor" type="number" min="0" max="${caps.geoMotor}" step="1" required placeholder="Jumlah motor saat mulai"></label>
  <label>Mobil terisi · Geografi <small>Maks. ${caps.geoCar} (estimasi)</small><input name="geoCar" type="number" min="0" max="${caps.geoCar}" step="1" required placeholder="Jumlah mobil saat mulai"></label>
  <label>Mobil terisi · Gedung Kuliah 2 <small>Maks. ${caps.gk2Car} (estimasi)</small><input name="gk2Car" type="number" min="0" max="${caps.gk2Car}" step="1" required placeholder="Jumlah mobil saat mulai"></label>
  <div class="activation-action"><label class="activation-confirm"><input type="checkbox" name="confirmed" required> Saya petugas berwenang, sudah menghitung kendaraan saat ini, dan memahami bahwa angka akan ditampilkan secara publik.</label><button type="submit" ${state.busy?'disabled':''}>Aktifkan ketiga zona secara bersamaan →</button><small>Jangan gunakan angka percobaan. Kapasitas mobil perlu dikonfirmasi pengelola sebelum operasional.</small></div>
- </form>`;
+ </form></details>`;
 }
 async function activateFmipa(ev){
  ev.preventDefault();if(state.busy||!isLive()||!state.user||!state.sb)return;
@@ -334,13 +334,13 @@ function renderFebActivation(zs){
  panel.classList.toggle('hidden',!canInit);
  if(!canInit){panel.innerHTML='';return;}
  const caps={motor:cap(entries[0],'motor'),front:cap(entries[1],'mobil'),rear:cap(entries[2],'mobil')};
- panel.innerHTML=`<div class="activation-title"><div><span class="activation-kicker">KHUSUS PETUGAS FEB · SETUP SATU KALI</span><h3>Aktifkan 3 zona parkir FEB</h3><p>Masukkan jumlah kendaraan yang benar-benar sedang terparkir saat operasional dimulai. Seluruh zona akan aktif bersamaan; jangan gunakan angka contoh.</p></div><span class="status-badge pending">Belum aktif</span></div>
+ panel.innerHTML=`<details class="ps410-special" data-ps410-panel="FEB"><summary>Aktivasi awal FEB (3 zona sekaligus)</summary><div class="activation-title"><div><span class="activation-kicker">KHUSUS PETUGAS FEB · SETUP SATU KALI</span><h3>Aktifkan 3 zona parkir FEB</h3><p>Masukkan jumlah kendaraan yang benar-benar sedang terparkir saat operasional dimulai. Seluruh zona akan aktif bersamaan; jangan gunakan angka contoh.</p></div><span class="status-badge pending">Belum aktif</span></div>
  <form id="febActivateForm" class="activation-form">
  <label>Motor terisi · Parkiran Motor FEB <small>Maks. ${caps.motor}</small><input name="motor" type="number" min="0" max="${caps.motor}" step="1" required placeholder="Motor terparkir saat mulai"></label>
  <label>Mobil terisi · Parkiran Depan <small>Maks. ${caps.front}</small><input name="front" type="number" min="0" max="${caps.front}" step="1" required placeholder="Mobil terparkir saat mulai"></label>
  <label>Mobil terisi · Parkiran Belakang <small>Maks. ${caps.rear}</small><input name="rear" type="number" min="0" max="${caps.rear}" step="1" required placeholder="Mobil terparkir saat mulai"></label>
  <div class="activation-action"><label class="activation-confirm"><input type="checkbox" name="confirmed" required> Saya petugas berwenang, telah menghitung kendaraan yang ada saat ini, dan memahami bahwa hasilnya akan tampil di website publik.</label><button type="submit" ${state.busy?'disabled':''}>Aktifkan ketiga zona FEB →</button><small>Jangan diaktifkan sebelum petugas benar-benar siap mencatat kendaraan masuk dan keluar.</small></div>
- </form>`;
+ </form></details>`;
 }
 async function activateFeb(ev){
  ev.preventDefault();if(state.busy||!isLive()||!state.user||!state.sb)return;
@@ -399,7 +399,7 @@ function capacityEditorMarkup(z, expanded=false){
  const m=cap(z,'motor'),c=cap(z,'mobil');
  if(!m&&!c)return '';
  const disabled=state.busy?'disabled':'';
- return `<details class="capacity-editor" ${expanded?'open':''} data-capacity-panel="${safe(z.id)}">
+ return `<details class="capacity-editor" ${expanded?'open':''} data-capacity-panel="${safe(z.id)}" data-ps410-panel="capacity:${safe(z.id)}">
    <summary><span class="capacity-edit-icon" aria-hidden="true">✎</span> Ubah kapasitas total zona <span class="capacity-edit-hint">Hanya petugas berwenang</span></summary>
    <form class="capacity-edit-form" data-update-capacity="${safe(z.id)}">
      <p class="capacity-edit-help">Sesuaikan jumlah tempat parkir fisik setelah pemeriksaan lapangan. Ini <b>kapasitas total</b>, bukan jumlah slot kosong. Slot kosong dihitung otomatis dari kapasitas − kendaraan terisi.</p>
@@ -407,7 +407,7 @@ function capacityEditorMarkup(z, expanded=false){
        ${m?`<label>Kapasitas motor (saat ini ${nf(m)})<input name="motor" type="number" min="1" max="100000" step="1" value="${m}" required ${disabled}></label>`:''}
        ${c?`<label>Kapasitas mobil (saat ini ${nf(c)})<input name="car" type="number" min="1" max="100000" step="1" value="${c}" required ${disabled}></label>`:''}
      </div>
-     <label class="capacity-edit-reason">Alasan penyesuaian kapasitas<input name="reason" type="text" minlength="10" maxlength="500" required placeholder="Contoh: Area tambahan dibuka setelah pengecekan lapangan" ${disabled}></label>
+     
      <label class="capacity-edit-confirm"><input name="confirmed" type="checkbox" required ${disabled}> Saya telah memeriksa kapasitas fisik zona ini. Perubahan akan tampil di website publik bila zona sudah aktif.</label>
      <button type="submit" ${disabled}>Simpan kapasitas baru</button>
      <small>Riwayat perubahan tersimpan di database. Perubahan untuk zona belum dihitung tidak mengaktifkan zona.</small>
@@ -423,8 +423,8 @@ async function updateZoneCapacity(ev){
  if(!z || z.__preview || !state.assignments.includes(String(id))){toast('Zona tidak ditugaskan kepada akun ini.',true);return;}
  const m=cap(z,'motor')>0?Number(form.elements.namedItem('motor')?.value):0;
  const c=cap(z,'mobil')>0?Number(form.elements.namedItem('car')?.value):0;
- const reason=String(form.elements.namedItem('reason')?.value||'').trim();
- if(!Number.isSafeInteger(m)||!Number.isSafeInteger(c)||m<0||c<0||m>100000||c>100000||reason.length<10||reason.length>500){toast('Kapasitas atau alasan tidak valid.',true);return;}
+ const reason='Perubahan kapasitas lewat dashboard UI ParkSense. Motor '+cap(z,'motor')+' menjadi '+m+'; mobil '+cap(z,'mobil')+' menjadi '+c+'.';
+ if(!Number.isSafeInteger(m)||!Number.isSafeInteger(c)||m<0||c<0||m>100000||c>100000){toast('Kapasitas baru tidak valid.',true);return;}
  if(m===cap(z,'motor')&&c===cap(z,'mobil')){toast('Kapasitas belum berubah.');return;}
  if(!isUnknown(z,'motor')&&m<occ(z,'motor') || !isUnknown(z,'mobil')&&c<occ(z,'mobil')){toast('Kapasitas baru tidak boleh lebih kecil dari jumlah kendaraan terisi.',true);return;}
  if(!window.confirm('Simpan kapasitas baru untuk '+z.name+'?\nMotor: '+nf(cap(z,'motor'))+' → '+nf(m)+'\nMobil: '+nf(cap(z,'mobil'))+' → '+nf(c)+'\n\nKetersediaan pengunjung akan ikut berubah saat data zona aktif.'))return;
@@ -494,17 +494,19 @@ async function previewNewsDraft(event){
 }
 
 function renderAdmin(){
- if(!canAdmin())return;const zs=ownZones();
- const plan=zs.some(z=>isUnknown(z,'motor')&&cap(z,'motor')>0 || isUnknown(z,'mobil')&&cap(z,'mobil')>0),active=zs.filter(z=>!z.__preview&&z.operational!==false&&z.counts_initialized!==false);
+ const ps410Previous=window.ParkSenseAdminV410.capture();
+ if(!canAdmin())return;const zs=ownZones();const groups=window.ParkSenseAdminV410.group(zs);const primary=groups.flatMap(g=>g.zones);
+ const plan=primary.some(z=>isUnknown(z,'motor')&&cap(z,'motor')>0 || isUnknown(z,'mobil')&&cap(z,'mobil')>0),active=primary.filter(z=>!z.__preview&&z.operational!==false&&z.counts_initialized!==false);
  $('adminBanner').className='admin-banner'+(isLive()?' live':'');
  $('adminBanner').textContent=plan?'MULTI-ZONA DALAM PERSIAPAN — hitungan awal belum diisi pada sebagian area. Tombol kendaraan masuk/keluar baru dapat digunakan setelah aktivasi oleh petugas berwenang.':'AKUN PETUGAS AKTIF — perubahan disimpan ke database dan diteruskan ke dashboard pengunjung.';
  $('adminLogout').textContent='Keluar akun';
- $('myZones').textContent=nf(zs.length);$('myMotorFree').textContent=active.length?nf(active.reduce((s,z)=>s+(free(z,'motor')||0),0)):'—';$('myCarFree').textContent=active.length?nf(active.reduce((s,z)=>s+(free(z,'mobil')||0),0)):'—';
+ $('myZones').textContent=nf(primary.length);$('myMotorFree').textContent=active.length?nf(active.reduce((s,z)=>s+(free(z,'motor')||0),0)):'—';$('myCarFree').textContent=active.length?nf(active.reduce((s,z)=>s+(free(z,'mobil')||0),0)):'—';
  renderFmipaActivation(zs);
  renderFebActivation(zs);
- $('adminZones').innerHTML=zs.length?zs.map(z=>`<article class="admin-zone ${isUnknown(z,'motor')||isUnknown(z,'mobil')?'preview-zone':''}"><div class="admin-zone-head"><div class="admin-zone-title"><img class="admin-faculty-logo" src="${makaraSrc(z.code)}" alt="Makara ${safe(z.faculty)}" loading="lazy" width="45" height="45"><div><h3>${safe(z.name)}</h3><small>⌖ ${safe(z.faculty)}</small></div></div><span class="detail-tag">${safe(z.code)}</span></div>${z.__preview||z.operational===false?'<p class="zone-preview-label">Menunggu input awal petugas · belum beroperasi</p>':''}${drawCounter(z,'motor')}${drawCounter(z,'mobil')}${genericZoneActivationMarkup(z)}<div class="admin-foot"><span>Terakhir diperbarui</span><strong>${z.__preview||z.operational===false?'Belum beroperasi':safe(localTime(z.updated_at))}</strong></div></article>`).join(''):'<div class="empty-list">Akun ini belum memiliki area parkir yang ditugaskan. Hubungi pengelola.</div>';
-  $('adminCapacityZones').innerHTML=zs.length?zs.map(z=>`<article class="ps47-capacity-card"><div class="ps47-capacity-heading"><img src="${makaraSrc(z.code)}" alt="" width="42" height="42" loading="lazy"><div><span class="ps47-capacity-code">${safe(z.code)}</span><h3>${safe(z.name)}</h3><p>${safe(z.faculty)}</p></div></div><div class="ps47-capacity-values"><span>Motor: <strong>${cap(z,'motor')?nf(cap(z,'motor')):'—'}</strong></span><span>Mobil: <strong>${cap(z,'mobil')?nf(cap(z,'mobil')):'—'}</strong></span></div>${capacityEditorMarkup(z,true)||'<p class="ps47-unavailable">Zona pratinjau atau belum ditugaskan secara penuh. Perubahan kapasitas belum tersedia.</p>'}</article>`).join(''):'<div class="empty-list">Belum ada zona yang ditugaskan.</div>';
-  populateNewsZoneChoices(zs);
+ $('adminZones').innerHTML=groups.length?groups.map(g=>window.ParkSenseAdminV410.vehicle(g,zs)).join(''):'<div class="empty-list">Akun ini belum memiliki zona parkir yang ditugaskan. Hubungi pengelola.</div>';
+ $('adminCapacityZones').innerHTML=groups.length?groups.map(g=>window.ParkSenseAdminV410.capacity(g,zs)).join(''):'<div class="empty-list">Belum ada zona yang ditugaskan.</div>';
+  populateNewsZoneChoices(primary);
+ window.ParkSenseAdminV410.restore(ps410Previous);
  drawHistory();
 }
 function drawHistory(){if(!canAdmin())return;const source=state.history.filter(e=>state.assignments.includes(String(e.zone_id)));$('activityList').innerHTML=source.length?source.slice(0,12).map(e=>{const name=state.zones.find(z=>String(z.id)===String(e.zone_id))?.code||'—',pos=e.delta>0;return `<div class="history-item"><div class="history-ico ${pos?'':'minus'}">${pos?'+':'−'}</div><div class="history-copy"><strong>${safe(e.vehicle==='motor'?'Motor':'Mobil')} ${pos?'masuk':'keluar'} · ${safe(name)}</strong><small>${pos?'Terisi bertambah 1 slot':'Terisi berkurang 1 slot'}</small></div><div class="history-date">${safe(localTime(e.created_at))}</div></div>`;}).join(''):'<div style="padding:23px 0;font-size:11px;color:#92a396">Belum ada aktivitas kendaraan yang tercatat.</div>';}
