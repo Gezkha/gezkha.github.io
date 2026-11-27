@@ -374,3 +374,13 @@ html{scroll-padding-top:96px}
 
 /* V5.6 functional controls, preserve folder and responsive layout */
 .search-hint56{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 12px;margin-bottom:10px;border:1px solid #b6c4aa;border-radius:10px;background:#f8f5e9;color:#103b2d;font-size:13px}.search-hint56 button{min-height:40px;text-decoration:underline}.faq-search56{display:grid;gap:5px;font-weight:700;font-size:13px;margin:12px 0}.faq-search56 input{width:100%;min-width:0;border:1px solid #bcc6b4;border-radius:10px;padding:10px 12px;color:#103b2d;background:#fffdf7;font:inherit;min-height:44px}.faq-item[hidden],.search-hint56[hidden],#searchOther56[hidden],#feedbackLink56[hidden]{display:none!important}#feedbackLink56{display:inline-flex;margin:10px 0;min-height:44px}.staff-steps56{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.staff-steps56 span{padding:5px 8px;border-radius:8px;background:#eae9df;color:#536257;font-size:11px;font-weight:700}.staff-steps56 .done{background:#dce9d5;color:#174b32}.staff-steps56 .current{background:#f6dfa0;color:#634814}.staff-next56{margin:0 0 10px;min-height:40px}.faq-search56 input:focus-visible,.staff-next56:focus-visible{outline:2px solid #103b2d;outline-offset:2px}
+
+
+/* V5.6.1 — clean public header, retain refresh and connection status by the map */
+.trial[hidden]{display:none!important}
+.public-data-status{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;padding:5px 0 0;color:#53665a;font-size:11px;line-height:1.5}
+.public-data-status [hidden]{display:none!important}
+.public-data-status #liveRefresh{color:#245a41;text-decoration:underline;min-height:36px;padding:4px 0;white-space:nowrap}
+.public-data-status #liveRefresh:disabled{opacity:.6;cursor:wait}
+.data-unavailable .public-data-status #liveState{color:#8b382b;font-weight:600}
+@media(max-width:760px){.public-data-status #liveRefresh{min-height:44px}}
