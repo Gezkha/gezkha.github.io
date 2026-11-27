@@ -32,7 +32,7 @@ window.ParkSenseAdminV410=(()=>{
   const open=new Set([...document.querySelectorAll('#adminView details[open][data-ps410-panel]')].map(x=>x.dataset.ps410Panel)),drafts=new Map();
   document.querySelectorAll('#adminView form').forEach(f=>{
    const id=f.id||f.dataset.activateZone||f.dataset.updateCapacity;
-   if(id)drafts.set(id,[...f.querySelectorAll('input[name],textarea[name],select[name]')].map(el=>({name:el.name,value:el.value,checked:el.checked})));
+   if(id)drafts.set(id,[...f.querySelectorAll('input[name],textarea[name],select[name]')].map(el=>({name:el.name,value:el.value,checked:el.checked,initial:el.defaultValue})));
   });
   return {open,drafts};
  }
@@ -40,8 +40,15 @@ window.ParkSenseAdminV410=(()=>{
   document.querySelectorAll('#adminView details[data-ps410-panel]').forEach(x=>{if(prev.open.has(x.dataset.ps410Panel))x.open=true;});
   document.querySelectorAll('#adminView form').forEach(f=>{
    const id=f.id||f.dataset.activateZone||f.dataset.updateCapacity;
-   for(const item of prev.drafts.get(id)||[]){
-    const el=[...f.querySelectorAll('input[name],textarea[name],select[name]')].find(x=>x.name===item.name);
+   const draft=prev.drafts.get(id)||[];
+   // Hindari input kapasitas lama setelah hasil perubahan dari database dimuat.
+   const fresh=[...f.querySelectorAll('input[name],textarea[name],select[name]')];
+   if(f.dataset.updateCapacity && draft.some(item=>{
+    const el=fresh.find(x=>x.name===item.name);
+    return el && el.type!=='checkbox' && el.defaultValue!==item.initial;
+   }))return;
+   for(const item of draft){
+    const el=fresh.find(x=>x.name===item.name);
     if(el){if(el.type==='checkbox'||el.type==='radio')el.checked=item.checked;else el.value=item.value;}
    }
   });
