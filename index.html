@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#113d2d">
+  <meta name="description" content="UI ParkSense: daftar 14 fakultas Universitas Indonesia, peta parkir, status zona, dan dashboard petugas dengan data Supabase.">
+  <title>UI ParkSense|Universitas Indonesia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="premium-final.css">
+  <link rel="stylesheet" href="vehicle-first.css">
+  <link rel="stylesheet" href="admin-v47.css">
+  <link rel="stylesheet" href="info-parkir-v48.css">
+  <link rel="stylesheet" href="news-admin-v49.css">
+  <script src="config.js"></script>
+  <script src="feedback-config.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+  <script src="app.js" defer></script>
+  <script src="help-center.js" defer></script>
+  <script src="vehicle-first.js" defer></script>
+  <script src="info-parkir-v48.js" defer></script>
+  <script src="news-admin-v49.js" defer></script>
+</head>
+<body>
+<svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+ <symbol id="ps-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></symbol>
+ <symbol id="ps-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></symbol>
+ <symbol id="ps-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+ <symbol id="ps-list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3" stroke-linecap="round"/></symbol>
+ <symbol id="ps-school" viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M8 11h.01M16 11h.01"/></symbol>
+ <symbol id="ps-car" viewBox="0 0 24 24"><path d="M5 16 6.5 9h11L19 16M4 16h16v4h-2v-2H6v2H4zM4 13l2.2-1.5h11.6L20 13"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></symbol>
+ <symbol id="ps-motorcycle" viewBox="0 0 24 24"><circle cx="5" cy="17.5" r="3"/><circle cx="19" cy="17.5" r="3"/><path d="M5 17.5 9.4 11h5l4.6 6.5M9.4 11l3.5 6.5H5M12.9 17.5l2.5-7h3M15.4 10.5l-1.5-2h-3M8.5 9h3"/></symbol>
+ <symbol id="ps-user-shield" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 20v-3a6 6 0 0 1 9-5.2M16.5 12l5 2v3c0 3-2.2 5-5 6-2.8-1-5-3-5-6v-3z"/></symbol>
+ <symbol id="ps-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+ <symbol id="ps-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.7 2.7 0 0 1 5.2 1c0 1.8-2.8 2.1-2.8 4"/><path d="M12 17.5h.01" stroke-width="2.6"/></symbol>
+ <symbol id="ps-message" viewBox="0 0 24 24"><path d="M20 15a4 4 0 0 1-4 4H8l-4 3V7a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h6"/></symbol>
+ <symbol id="ps-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+ </svg>
+<section id="ps46Welcome" class="ps46-welcome hidden" role="dialog" aria-modal="true" aria-labelledby="ps46WelcomeTitle" aria-describedby="ps46WelcomeDesc" tabindex="-1">
+  <div class="ps46-welcome-shell">
+    <div class="ps46-welcome-left">
+      <div class="ps46-welcome-logo"><img src="assets/makara/ui.png" alt="Makara UI"><span>UI <b>ParkSense</b><small>SMART CAMPUS PARKING</small></span></div>
+      <span class="ps46-welcome-kicker">PARKIR KAMPUS LEBIH MUDAH</span>
+      <h2 id="ps46WelcomeTitle">Hari ini kamu bawa <em>kendaraan apa?</em></h2>
+      <p id="ps46WelcomeDesc">Pilih kendaraanmu agar lokasi dan informasi parkir yang tampil lebih relevan.</p>
+      <div class="ps46-choice-grid">
+        <button class="ps46-choice" type="button" data-ps46-choose="motor"><span class="ps46-choice-ico"><svg class="ui-icon" aria-hidden="true"><use href="#ps-motorcycle"></use></svg></span><strong>Sepeda Motor</strong><small>Cari parkiran motor</small><span class="ps46-choice-go">Pilih motor →</span></button>
+        <button class="ps46-choice" type="button" data-ps46-choose="mobil"><span class="ps46-choice-ico"><svg class="ui-icon" aria-hidden="true"><use href="#ps-car"></use></svg></span><strong>Mobil</strong><small>Cari parkiran mobil</small><span class="ps46-choice-go">Pilih mobil →</span></button>
+      </div>
+      <div class="ps46-welcome-foot"><button type="button" id="ps46BrowseAll">Langsung lihat daftar lokasi <span aria-hidden="true">↗</span></button><button type="button" id="ps46AdminAccess">Masuk sebagai petugas <span aria-hidden="true">↗</span></button></div>
+      <span class="ps46-welcome-disclaimer">Prototipe mahasiswa · Jumlah slot kosong hanya tersedia setelah dihitung petugas.</span>
+    </div>
+    <div class="ps46-welcome-photo"><img src="assets/hero/rektorat-ui-foto-asli.webp" alt="Rektorat Universitas Indonesia di tepi danau"><div class="ps46-photo-label"><span>UNIVERSITAS INDONESIA</span><strong>Temukan tempat parkirmu<br>dengan lebih mudah.</strong></div></div>
+  </div>
+</section>
+<div class="site" id="site">
+  <aside class="sidebar" id="sidebar">
+    <a href="#beranda" class="brand" aria-label="UI ParkSense beranda" id="brandLink">
+      <span class="brand-icon" aria-hidden="true"><img src="assets/makara/ui.png" alt="" width="48" height="48"></span>
+      <span class="brand-copy"><strong>UI Park<span>Sense</span></strong><small>INFORMASI PARKIR KAMPUS</small></span>
+    </a>
+    <div class="nav-group-label">MENU UTAMA</div>
+    <nav class="side-nav" aria-label="Navigasi utama">
+      <button class="side-link active" type="button" data-view="guest" data-target="beranda"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-layout"></use></svg></span> Dashboard <span class="side-arrow">›</span></button>
+      <button class="side-link" type="button" data-view="guest" data-target="peta"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-map"></use></svg></span> Peta parkir</button>
+      <button class="side-link" type="button" data-view="guest" data-target="daftar"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-list"></use></svg></span> Daftar lokasi</button>
+      <button class="side-link" type="button" data-view="guest" data-target="info-parkir"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-message"></use></svg></span> Info Parkir UI</button>
+      <button class="side-link" type="button" data-view="guest" data-target="bantuan"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-help"></use></svg></span> Pusat Bantuan</button>
+    </nav>
+    <div class="nav-group-label nav-admin-label">AKSES PETUGAS</div>
+    <nav class="side-nav" aria-label="Navigasi petugas">
+      <button class="side-link" type="button" id="adminMenu"><span class="nav-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-user-shield"></use></svg></span> Dashboard petugas <span class="nav-lock">↗</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-tip"><span class="tip-top"><span class="pulse"></span> STATUS SISTEM</span><strong id="sideMode">Menghubungkan database</strong><p id="sideModeDesc">Menyiapkan informasi parkir langsung dari Supabase.</p></div>
+      <div class="side-footer">Prototipe independen mahasiswa · Bukan situs resmi Universitas Indonesia</div>
+    </div>
+  </aside>
+  <div class="main-wrap">
+    <header class="topbar" aria-label="Navigasi dan pencarian">
+      <div class="header-left">
+        <button class="hamburger" id="hamburger" type="button" aria-label="Buka menu">☰</button>
+        <div class="ui-wordmark" aria-label="Universitas Indonesia"><img src="assets/makara/ui.png" alt="Makara Universitas Indonesia" width="48" height="48"><span><strong>UNIVERSITAS<br>INDONESIA</strong><small>Veritas, Probitas, Iustitia</small></span></div>
+        <span class="header-breadcrumb">⌂ <span class="crumb-slash">/</span> <b id="breadcrumb">Overview parkir</b></span>
+      </div>
+      <form class="top-search" id="topSearchForm" role="search"><label for="topSearch" class="sr-only">Cari lokasi parkir</label><span aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-search"></use></svg></span><input id="topSearch" type="search" autocomplete="off" placeholder="Cari lokasi, fakultas, atau zona parkir..."><button type="submit" aria-label="Cari lokasi parkir">Cari</button></form>
+      <div class="header-right"><div class="ps46-vehicle-switch" id="ps46HeaderSwitch" role="group" aria-label="Ganti jenis kendaraan"><button type="button" data-ps46-switch="motor" aria-pressed="true"><svg class="ui-icon" aria-hidden="true"><use href="#ps-motorcycle"></use></svg> Motor</button><button type="button" data-ps46-switch="mobil" aria-pressed="false"><svg class="ui-icon" aria-hidden="true"><use href="#ps-car"></use></svg> Mobil</button></div><span id="syncChip" class="sync-chip connecting"><span class="pulse"></span> Data belum tersedia</span><button class="head-login" id="headerLogin" type="button">Masuk Petugas <span>↗</span></button></div>
+    </header>
+    <main class="content">
+      <section id="guestView" class="view">
+        <div class="greeting" id="introGreeting"><div><p class="eyebrow">UI PARKSENSE • KAMPUS UI DEPOK <span class="eyebrow-line"></span></p><h1>Jelajahi parkir dengan <span>lebih mudah.</span></h1><p class="greeting-sub">Temukan lokasi parkir tiap fakultas, lihat kapasitas, dan periksa apakah jumlah slot sudah dihitung petugas.</p></div><div class="date-label" id="dateNow">Kampus UI • Depok</div></div>
+        
+        <section class="hero" id="beranda" aria-label="Cari parkir di Kampus UI">
+          <div class="hero-content">
+            <span class="hero-tag"><span class="hero-tag-dot"></span> SMART CAMPUS · UNIVERSITAS INDONESIA</span>
+            <h2>Temukan <em>parkir</em> lebih cepat.<br>Kuliah <em>lebih tenang.</em></h2>
+            <p>Cari area parkir, lihat kapasitas, dan cek status penghitungan kendaraan di lingkungan Universitas Indonesia.</p>
+            <label class="hero-input"><span class="search-symbol" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-search"></use></svg></span><input id="heroSearch" type="search" aria-label="Cari fakultas atau area parkir" placeholder="Cari fakultas atau area parkir..."><button id="heroSearchBtn" type="button">Cari <span aria-hidden="true">→</span></button></label>
+          </div>
+          <div class="hero-illustration" aria-label="Foto gedung Rektorat Universitas Indonesia"><img src="assets/hero/rektorat-ui-foto-asli.webp" alt="Gedung Rektorat Universitas Indonesia di tepi danau" loading="eager"><div class="hero-image-overlay"></div></div>
+          <img class="hero-watermark" src="assets/makara/ui.png" width="225" height="225" alt="" aria-hidden="true"><span class="hero-gold-corner" aria-hidden="true"></span>
+        </section>
+        <div class="v4-shortcuts" aria-label="Akses cepat">
+          <button type="button" data-view="guest" data-target="info-parkir"><span class="v4-shortcut-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-message"></use></svg></span><span><strong>Info Parkir UI</strong><small>Info operasional parkir</small></span><span class="shortcut-arrow">↗</span></button>
+          <button type="button" data-view="guest" data-target="peta"><span class="v4-shortcut-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-map-pin"></use></svg></span><span><strong>Peta kampus</strong><small>Lihat titik parkir</small></span><span class="shortcut-arrow">↗</span></button>
+          <button type="button" data-view="guest" data-target="daftar"><span class="v4-shortcut-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-list"></use></svg></span><span><strong>Daftar lokasi</strong><small>Cari parkiranmu</small></span><span class="shortcut-arrow">↗</span></button>
+        </div>
+        <div class="section-title stats-title"><div><h2>Ringkasan ParkSense</h2><p>Slot kosong aktual dihitung hanya dari zona yang sudah diaktifkan dan dihitung petugas.</p></div><div class="asof-label" id="lastSync">Diperbarui: —</div></div>
+        <div class="stats-grid" aria-label="Ringkasan data ParkSense">
+          <div class="stat-box"><span class="stat-icon green" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-map-pin"></use></svg></span><div><small>Titik parkir terdata</small><strong id="statLocations">—</strong><span>lokasi, termasuk kawasan RIK</span></div></div>
+          <div class="stat-box"><span class="stat-icon yellow" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-motorcycle"></use></svg></span><div><small>Slot motor kosong</small><strong id="statMotorCapacity">—</strong><span id="statMotorNote">Menunggu data petugas</span></div></div>
+          <div class="stat-box"><span class="stat-icon yellow" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-car"></use></svg></span><div><small>Slot mobil kosong</small><strong id="statCarCapacity">—</strong><span id="statCarNote">Menunggu data petugas</span></div></div>
+          <div class="stat-box"><span class="stat-icon green" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-school"></use></svg></span><div><small>Fakultas di UI</small><strong id="statFacultyCount">14 fakultas</strong><span>katalog fakultas lengkap</span></div></div>
+        </div>
+        <div class="demo-alert" id="demoAlert"><span class="alert-icon">ⓘ</span><div><strong>Anda sedang melihat data simulasi.</strong> Kapasitas dan titik parkir masih perlu diverifikasi oleh pengelola. Sambungkan Supabase dan data petugas untuk pembaruan bersama.</div></div>
+
+        <div class="section-title map-title" id="peta"><div><h2>Jelajahi peta parkir <span class="title-count" id="mapCount"></span></h2><p>Pilih titik untuk melihat lokasi dan kapasitas. Slot kosong hanya tersedia untuk zona yang sudah dihitung.</p></div><button id="locateBtn" type="button" class="small-action"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-crosshair"></use></svg> Gunakan lokasiku</button></div>
+        <section class="map-grid">
+          <div class="map-panel"><div class="map-toolbar"><div class="vehicle-switch" role="group" aria-label="Jenis kendaraan"><button type="button" data-vehicle="motor" class="active"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-motorcycle"></use></svg> Motor</button><button type="button" data-vehicle="mobil"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-car"></use></svg> Mobil</button></div><div class="map-toolbar-right"><span id="mapLiveLabel">● Menghubungkan</span><button id="recenterBtn" type="button" title="Lihat seluruh kampus"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-crosshair"></use></svg></button></div></div><div id="parkingMap" class="parking-map"><div class="map-nojs" id="mapFallback">Menghubungkan peta…<small>Butuh koneksi internet untuk memuat OpenStreetMap.</small></div></div><div class="map-footer"><div class="legend"><span><i class="lg-dot available"></i> Tersedia</span><span><i class="lg-dot limited"></i> Hampir penuh</span><span><i class="lg-dot full"></i> Penuh</span><span><i class="lg-dot pending"></i> Belum dihitung</span></div><small>© OpenStreetMap contributors</small></div></div>
+          <div class="detail-panel" id="detailPanel"><div class="detail-eyebrow"><span>DETAIL LOKASI</span><span class="detail-tag" id="detailCode">FTUI</span></div><div class="detail-pin"><img id="detailMakara" src="assets/makara/ui.png" alt="Makara fakultas lokasi terpilih" width="57" height="57"></div><h3 id="detailName">Parkir FTUI</h3><p class="detail-address" id="detailAddress">Area Fakultas Teknik, Kampus UI Depok</p><div class="availability"><div class="availability-left"><strong id="detailAvailable">—</strong><div><b>Slot tersedia</b><small id="detailCapacity">dari — kapasitas</small></div></div><span class="status-badge available" id="detailStatus">Tersedia</span></div><div class="bar-track"><div class="bar-fill" id="detailBar"></div></div><div class="detail-mini"><span><b id="detailOccupied">—</b> terisi</span><span><b id="detailPercent">—</b> tersedia</span></div><div class="divider"></div><div class="detail-info"><span>Jenis kendaraan</span><strong id="detailType">Motor</strong></div><div class="detail-info"><span>Terakhir diperbarui</span><strong id="detailUpdated">—</strong></div><div class="detail-info" id="distanceRow" hidden><span>Jarak garis lurus</span><strong id="detailDistance">—</strong></div><p class="marker-disclaimer" id="markerDisclaimer">ⓘ Penanda masih titik perkiraan di sekitar fakultas, bukan pintu masuk parkir terverifikasi.</p><a id="directionsBtn" href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" class="directions">↗ &nbsp; Petunjuk arah (perkiraan)</a></div>
+        </section>
+        <div class="section-title list-title" id="daftar"><div><h2>Temukan parkiranmu <span id="resultCounter" class="title-count"></span></h2><p>Lihat zona parkir berdasarkan fakultas. Zona yang belum dihitung tidak menampilkan angka slot kosong.</p></div><div class="filters"><label class="filter-search"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-search"></use></svg> <input type="search" id="listSearch" placeholder="Cari lokasi..." aria-label="Cari lokasi parkir"></label><select id="statusFilter" aria-label="Filter status"><option value="all">Semua status</option><option value="available">Tersedia</option><option value="limited">Hampir penuh</option><option value="full">Penuh</option><option value="pending">Belum dihitung</option></select><select id="sortSelect" aria-label="Urutkan"><option value="free">Slot terbanyak</option><option value="nearest">Terdekat</option><option value="name">Nama A–Z</option></select></div></div>
+        <section class="ps46-carousel" id="ps46CarouselSection" aria-labelledby="ps46CarouselTitle">
+          <div class="ps46-carousel-heading"><div><span class="ps46-eyebrow">JELAJAHI LOKASI</span><h3 id="ps46CarouselTitle">Pilihan parkiran untuk motor</h3><p>Geser kartu untuk melihat lokasi lainnya. Status mengikuti data petugas.</p></div><div class="ps46-carousel-controls"><button type="button" id="ps46CarouselPrev" aria-label="Geser ke kiri">←</button><button type="button" id="ps46CarouselNext" aria-label="Geser ke kanan">→</button></div></div>
+          <div class="ps46-carousel-track" id="ps46CarouselTrack" tabindex="0" aria-label="Lokasi parkir pilihan" role="region"></div>
+        </section>
+        <div class="ps46-list-intro"><div><span class="ps46-eyebrow">DAFTAR LOKASI</span><h3>Semua lokasi <span id="ps46ListVehicleLabel">motor</span></h3><p>Menampilkan 6 lokasi lebih dahulu agar lebih mudah dipindai.</p></div><span id="ps46ShownCounter" aria-live="polite"></span></div>
+        <div id="parkingCards" class="parking-cards ps46-parking-cards"></div>
+        <div class="ps46-more-wrap" id="ps46MoreWrap"><button type="button" id="ps46MoreBtn" class="ps46-more-button">Lihat lebih banyak lokasi <span aria-hidden="true">↓</span></button></div>
+
+        <section id="info-parkir" class="ps48-news" aria-labelledby="ps48NewsHeading">
+          <div class="ps48-hero">
+            <div class="ps48-hero-copy"><span class="ps48-kicker">INFO PARKIR UI • PENGUMUMAN AREA</span><h2 id="ps48NewsHeading">Kabar terbaru seputar parkir kampus.</h2><p>Ketahui perubahan akses, renovasi, dan jam operasional langsung dari pengelola zona. Informasi pengumuman berbeda dari jumlah slot kosong.</p><a href="#daftar" class="ps48-hero-link" data-ps48-go-parking>Jelajahi lokasi parkir <span aria-hidden="true">↗</span></a></div>
+            <div class="ps48-hero-icon" aria-hidden="true"><svg class="ui-icon"><use href="#ps-message"></use></svg></div>
+          </div>
+          <div class="ps48-heading"><div><span>INFORMASI OPERASIONAL</span><h3>Pengumuman parkir</h3><p>Gunakan pencarian dan kategori untuk melihat informasi yang relevan.</p><small id="ps48LiveStatus" class="ps48-live-status" role="status">● Menghubungkan pembaruan berita…</small></div><span id="ps48NewsCount" class="ps48-count" aria-live="polite">Memuat…</span></div>
+          <div class="ps48-toolbar"><label><span class="sr-only">Cari berita parkir</span><svg class="ui-icon" aria-hidden="true"><use href="#ps-search"></use></svg><input id="ps48NewsSearch" type="search" placeholder="Cari judul, isi, atau lokasi..." autocomplete="off"></label><label><span class="sr-only">Kategori berita</span><select id="ps48NewsCategory"><option value="all">Semua kategori</option><option value="Penutupan">Penutupan</option><option value="Renovasi">Renovasi</option><option value="Jam operasional">Jam operasional</option><option value="Pengumuman">Pengumuman</option></select></label></div>
+          <div id="ps48NewsCards" class="ps48-grid" aria-live="polite"></div>
+          <div id="ps48NewsEmpty" class="ps48-empty" role="status"><div class="ps48-empty-icon" aria-hidden="true"><svg class="ui-icon"><use href="#ps-message"></use></svg></div><h4>Pengumuman parkir belum tersedia</h4><p>Belum ada pengumuman yang diterbitkan petugas. Informasi baru akan muncul di halaman ini setelah fitur penerbitan diaktifkan.</p><button type="button" data-ps48-go-parking class="ps48-empty-button">Lihat daftar lokasi parkir ↗</button></div>
+          <p class="ps48-disclaimer">UI ParkSense merupakan prototipe independen mahasiswa. Pengumuman hanya muncul setelah diterbitkan oleh akun petugas yang ditugaskan ke lokasi terkait.</p>
+        </section>
+
+        <section class="faculty-directory ps48-hidden-legacy" id="fakultas" aria-label="Daftar lengkap 14 fakultas UI">
+          <div class="faculty-directory-heading">
+            <div><p class="faculty-kicker">SELURUH FAKULTAS UNIVERSITAS INDONESIA</p><h2>Parkir di 14 Fakultas UI</h2><p id="facultyProgress" aria-live="polite">Menyiapkan daftar fakultas…</p></div>
+            <div class="directory-tools"><div class="faculty-view-switch" role="group" aria-label="Pilihan tampilan fakultas"><button type="button" data-faculty-view="cards" class="active"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-layout"></use></svg> Kartu</button><button type="button" data-faculty-view="list"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#ps-list"></use></svg> Daftar</button></div><button id="resetFacultyFilter" type="button" class="faculty-reset hidden">Semua fakultas ↗</button></div>
+          </div>
+          <div class="faculty-grid" id="facultyGrid"></div>
+          <p class="faculty-note">ⓘ “Belum dihitung” artinya jumlah slot kosong belum diketahui, bukan nol atau penuh. Beberapa data masih perlu verifikasi. RIK adalah kawasan bersama, bukan fakultas ke-15; Vokasi dan Pascasarjana bukan bagian dari daftar ini.</p>
+        </section>
+
+        <section class="v3-plan-section" id="fmipaPlanNotice" aria-label="Pengembangan parkir FMIPA">
+          <div class="v3-plan-top"><div><span class="v3-plan-kicker">INFORMASI PARKIR FMIPA</span><h2>Tiga lokasi parkir FMIPA</h2><p>Pilih penanda di peta. Jumlah kendaraan terisi masih menunggu hitungan petugas, bukan nol.</p></div><span class="v3-plan-status">● Menunggu data petugas</span></div>
+          <div class="v3-plan-grid">
+            <div class="v3-plan-item"><span class="v3-mini-ico">M</span><div><strong>Parkir Motor Depan</strong><small>Dekat Matematika · 80 motor</small></div></div>
+            <div class="v3-plan-item"><span class="v3-mini-ico">G</span><div><strong>Parkir Geografi</strong><small>378 motor · ±20 mobil</small></div></div>
+            <div class="v3-plan-item"><span class="v3-mini-ico">K</span><div><strong>Gedung Kuliah 2</strong><small>±20 mobil</small></div></div>
+          </div>
+          <p class="v3-plan-foot">Kapasitas mobil masih perkiraan. Parkir Gedung 2 Dekanat khusus dosen tidak ditampilkan sebagai pilihan mahasiswa.</p>
+        </section>
+        <section class="v3-plan-section" id="febPlanNotice" aria-label="Pengembangan parkir FEB">
+          <div class="v3-plan-top"><div><span class="v3-plan-kicker">INFORMASI PARKIR FEB</span><h2>Tiga lokasi parkir FEB</h2><p>Lokasi dan kapasitas telah didata. Jumlah kendaraan terisi belum dihitung oleh petugas dan tidak dianggap kosong.</p></div><span class="v3-plan-status">● Menunggu data petugas</span></div>
+          <div class="v3-plan-grid">
+            <div class="v3-plan-item"><span class="v3-mini-ico">M</span><div><strong>Parkiran Motor FEB</strong><small>264 sepeda motor</small></div></div>
+            <div class="v3-plan-item"><span class="v3-mini-ico">D</span><div><strong>Parkiran Mobil Depan</strong><small>76 mobil</small></div></div>
+            <div class="v3-plan-item"><span class="v3-mini-ico">B</span><div><strong>Parkiran Mobil Belakang</strong><small>65 mobil</small></div></div>
+          </div>
+          <p class="v3-plan-foot">Kapasitas berdasarkan pendataan pengembang. Informasi slot tersedia baru akan muncul setelah penghitungan awal oleh petugas FEB.</p>
+        </section>
+
+        <section class="ps-help" id="bantuan" aria-labelledby="helpHeading">
+          <div class="ps-help-header">
+            <div>
+              <span class="ps-help-eyebrow">BANTUAN & UMPAN BALIK</span>
+              <h2 id="helpHeading">Ada pertanyaan tentang <em>UI ParkSense?</em></h2>
+              <p>Temukan jawaban singkat atau sampaikan masukan untuk meningkatkan pengalaman parkir di kampus UI.</p>
+            </div>
+            <span class="ps-help-header-icon" aria-hidden="true"><svg class="ui-icon"><use href="#ps-help"></use></svg></span>
+          </div>
+          <div class="ps-help-grid">
+            <div class="ps-help-faq" aria-labelledby="faqHeading">
+              <div class="ps-help-card-heading">
+                <span class="ps-help-icon" aria-hidden="true"><svg class="ui-icon"><use href="#ps-help"></use></svg></span>
+                <div><h3 id="faqHeading">Pertanyaan Umum (FAQ)</h3><p>Panduan cepat menggunakan UI ParkSense.</p></div>
+              </div>
+              <div class="ps-faq-items">
+                <details class="ps-faq" open>
+                  <summary>Bagaimana cara mencari parkiran di UI?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Gunakan kolom pencarian atau buka menu <strong>Daftar lokasi</strong>. Pilih Motor atau Mobil, lalu pilih lokasi dan buka detail atau petunjuk arah.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Bagaimana cara melihat posisi parkiran di peta?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Buka <strong>Peta parkir</strong>, pilih Motor atau Mobil, lalu pilih penanda lokasi. Tombol <strong>Petunjuk arah</strong> membantu membuka navigasi. Beberapa penanda masih berupa titik perkiraan sehingga pintu masuk perlu dipastikan di lapangan.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Apa arti status “Belum dihitung”?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Artinya petugas belum menyelesaikan penghitungan awal pada zona itu. <strong>Bukan berarti parkiran kosong.</strong> Jumlah slot tersedia baru ditampilkan setelah ada penghitungan yang valid.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Apa bedanya kapasitas dan slot kosong?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer"><strong>Kapasitas</strong> adalah jumlah maksimum kendaraan yang dapat ditampung. <strong>Slot kosong</strong> adalah kapasitas dikurangi kendaraan terisi yang telah dicatat petugas. Angka slot kosong bisa berubah seiring pembaruan lapangan.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Apakah data parkir diperbarui secara otomatis?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Data kendaraan <strong>dicatat manual oleh petugas</strong>, kemudian pembaruannya dikirim melalui Supabase ke website. UI ParkSense tidak memakai sensor penghitung kendaraan pada tahap ini.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Apakah saya perlu membuat akun untuk mencari parkir?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Tidak. Pengunjung bisa mencari parkir, melihat peta, dan membaca informasi tanpa login. Login hanya diperlukan bagi petugas yang berwenang mengelola zona.</div>
+                </details>
+                <details class="ps-faq">
+                  <summary>Bagaimana jika data parkir atau lokasi tidak sesuai?<span class="ps-faq-toggle" aria-hidden="true"></span></summary>
+                  <div class="ps-faq-answer">Silakan sampaikan melalui bagian <strong>Kritik & Saran</strong>. Tuliskan fakultas dan nama lokasi, jenis kesalahan, serta informasi yang membantu tim memeriksanya. Hindari mencantumkan informasi pribadi yang tidak perlu.</div>
+                </details>
+              </div>
+            </div>
+            <aside class="ps-feedback" aria-labelledby="feedbackHeading">
+              <span class="ps-feedback-pictogram" aria-hidden="true"><svg class="ui-icon"><use href="#ps-message"></use></svg></span>
+              <span class="ps-feedback-kicker">SUARAMU BERARTI</span>
+              <h3 id="feedbackHeading">Kritik &amp; Saran</h3>
+              <p>Ada masukan soal akurasi slot, lokasi parkir, atau pengalaman menggunakan website? Bantu kami membuat UI ParkSense lebih baik.</p>
+              <div class="ps-feedback-tags" aria-label="Kategori masukan">
+                <span>Data parkir</span><span>Lokasi & peta</span><span>Tampilan website</span><span>Ide fitur</span>
+              </div>
+              <a class="ps-feedback-link ps-feedback-link-disabled" id="feedbackFormLink" href="#bantuan" aria-disabled="true"><svg class="ui-icon" aria-hidden="true"><use href="#ps-message"></use></svg> Tautan formulir belum tersedia <span aria-hidden="true">↗</span></a>
+              <p class="ps-feedback-hint" id="feedbackFormHint" role="status">Tautan Google Form akan ditambahkan oleh pengelola. Formulir belum dapat dibuka.</p>
+              <span class="ps-feedback-meta">Formulir dikelola tim UI ParkSense · Tidak ada akun pengunjung yang diperlukan untuk melihat FAQ.</span>
+            </aside>
+          </div>
+        </section>
+
+        <footer class="page-footer"><div><b>UI ParkSense</b> · Prototipe informasi parkir UI Depok<br><small>Bukan produk resmi UI. Kapasitas dan titik parkir wajib diverifikasi sebelum operasional.</small></div><span>Foto: Rektorat UI (gambar yang disediakan tim) • Peta © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></span></footer>
+      </section>
+      <section id="adminView" class="view hidden" aria-label="Dashboard petugas">
+        <div class="admin-top ps47-heading">
+          <div><p class="eyebrow">PANEL OPERASIONAL • UI PARKSENSE</p><h1>Dashboard <span>Petugas Parkir</span></h1><p class="greeting-sub">Tiga aktivitas utama, satu dashboard. Pilih fitur yang ingin Anda gunakan.</p></div>
+          <div class="ps47-header-actions"><button type="button" id="backGuest" class="small-action">← Kembali ke pengunjung</button><button type="button" id="adminLogout" class="small-action ps47-logout">Keluar akun</button></div>
+        </div>
+        <div class="admin-banner" id="adminBanner">Data tersinkronisasi jika terhubung Supabase.</div>
+        <div class="admin-summary" aria-label="Ringkasan zona petugas">
+          <div class="admin-summary-card"><span>Area yang dikelola</span><strong id="myZones">—</strong></div>
+          <div class="admin-summary-card"><span>Slot motor tersisa</span><strong id="myMotorFree">—</strong></div>
+          <div class="admin-summary-card"><span>Slot mobil tersisa</span><strong id="myCarFree">—</strong></div>
+        </div>
+        <section class="ps47-workspace" aria-label="Pilih tugas petugas">
+          <div class="ps47-section-caption"><span>RUANG KERJA PETUGAS</span><h2>Mau mengelola apa hari ini?</h2><p>Pilih satu kartu. Detail fitur yang dipilih akan tampil di bawahnya.</p></div>
+          <div class="ps47-tool-grid" role="tablist" aria-label="Fitur Dashboard Petugas">
+            <button class="ps47-tool is-current" id="ps47-tab-kendaraan" role="tab" type="button" aria-selected="true" aria-controls="ps47-panel-kendaraan" data-ps47-admin-tab="kendaraan">
+              <span class="ps47-tool-top"><span class="ps47-tool-icon ps47-green"><svg class="ui-icon" aria-hidden="true"><use href="#ps-motorcycle"></use></svg></span><span class="ps47-tool-number">01 / OPERASIONAL</span></span>
+              <strong>Kelola Kendaraan</strong><span class="ps47-tool-copy">Catat motor dan mobil masuk atau keluar pada zona yang Anda kelola.</span><span class="ps47-tool-action">Buka fitur <span aria-hidden="true">↗</span></span>
+            </button>
+            <button class="ps47-tool" id="ps47-tab-kapasitas" role="tab" type="button" aria-selected="false" aria-controls="ps47-panel-kapasitas" data-ps47-admin-tab="kapasitas" tabindex="-1">
+              <span class="ps47-tool-top"><span class="ps47-tool-icon ps47-yellow"><svg class="ui-icon" aria-hidden="true"><use href="#ps-car"></use></svg></span><span class="ps47-tool-number">02 / KAPASITAS</span></span>
+              <strong>Update Kapasitas</strong><span class="ps47-tool-copy">Ubah kapasitas fisik motor dan mobil tanpa masuk ke SQL Editor.</span><span class="ps47-tool-action">Buka fitur <span aria-hidden="true">↗</span></span>
+            </button>
+            <button class="ps47-tool" id="ps47-tab-berita" role="tab" type="button" aria-selected="false" aria-controls="ps47-panel-berita" data-ps47-admin-tab="berita" tabindex="-1">
+              <span class="ps47-tool-top"><span class="ps47-tool-icon ps47-blue"><svg class="ui-icon" aria-hidden="true"><use href="#ps-list"></use></svg></span><span class="ps47-tool-number">03 / INFORMASI</span></span>
+              <strong>Kelola Berita</strong><span class="ps47-tool-copy">Siapkan pengumuman penutupan, renovasi, dan jam operasional.</span><span class="ps47-tool-action">Kelola berita <span aria-hidden="true">↗</span></span>
+            </button>
+          </div>
+        </section>
+        <div class="ps47-panels">
+          <section id="ps47-panel-kendaraan" class="ps47-panel" role="tabpanel" aria-labelledby="ps47-tab-kendaraan" tabindex="0" data-ps47-pane="kendaraan">
+            <div class="ps47-panel-title"><div><span class="ps47-panel-kicker">01 / OPERASIONAL</span><h2>Kelola Jumlah Kendaraan</h2><p>Tambahkan atau kurangi kendaraan. Jika zona belum aktif, lakukan penghitungan awal terlebih dahulu.</p></div><span class="ps47-readonly-note">Data tersimpan di Supabase</span></div>
+            <section id="fmipaActivationPanel" class="fmipa-activation hidden" aria-label="Pengaktifan zona FMIPA"></section>
+            <section id="febActivationPanel" class="fmipa-activation hidden" aria-label="Pengaktifan zona FEB"></section>
+            <div class="admin-zones" id="adminZones"></div>
+            <div class="section-title ps47-history-title"><div><h2>Riwayat Aktivitas</h2><p id="activityCaption">Pembaruan terbaru pada lokasi yang dikelola.</p></div></div>
+            <div class="history-panel" id="activityList"></div>
+            <p class="admin-note">Perubahan kendaraan tetap dicatat manual oleh petugas. Website tidak menggunakan sensor otomatis.</p>
+          </section>
+          <section id="ps47-panel-kapasitas" class="ps47-panel hidden" role="tabpanel" aria-labelledby="ps47-tab-kapasitas" tabindex="0" data-ps47-pane="kapasitas">
+            <div class="ps47-panel-title"><div><span class="ps47-panel-kicker">02 / DATA FISIK</span><h2>Update Kapasitas Parkir</h2><p>Pilih zona, masukkan kapasitas yang sudah diverifikasi di lapangan, dan tulis alasan perubahannya.</p></div><span class="ps47-readonly-note">Hanya zona berwenang</span></div>
+            <div class="ps47-guidance"><svg class="ui-icon" aria-hidden="true"><use href="#ps-help"></use></svg><div><strong>Kapasitas ≠ slot kosong.</strong><span>Pengubahan kapasitas tidak mengaktifkan zona. Slot kosong tetap “Belum dihitung” hingga petugas melakukan hitungan awal.</span></div></div>
+            <div class="ps47-capacity-grid" id="adminCapacityZones"></div>
+          </section>
+          <section id="ps47-panel-berita" class="ps47-panel hidden" role="tabpanel" aria-labelledby="ps47-tab-berita" tabindex="0" data-ps47-pane="berita">
+            <div class="ps47-panel-title"><div><span class="ps47-panel-kicker">03 / PENGUMUMAN</span><h2>Kelola Berita Parkir</h2><p>Buat, edit, terbitkan, atau arsipkan pengumuman untuk zona yang Anda kelola.</p></div><span class="ps47-readonly-note">Terhubung Supabase</span></div>
+            <div class="ps47-guidance ps47-news-notice"><svg class="ui-icon" aria-hidden="true"><use href="#ps-help"></use></svg><div><strong>Informasi akan dilihat pengunjung setelah diterbitkan.</strong><span>Pastikan berita dan foto sudah benar serta memiliki izin penggunaan. Draft dan arsip tidak tampil pada halaman publik.</span></div></div>
+            <div id="ps49Notice" class="ps49-notice" role="status">Memeriksa izin publikasi…</div>
+            <form id="ps47NewsDraftForm" class="ps47-news-form">
+              <input type="hidden" id="ps49NewsId">
+              <div class="ps47-news-fields">
+                <label>Zona parkir terkait<select id="ps47NewsZone" required><option value="">Pilih zona yang dikelola</option></select></label>
+                <label>Kategori<select id="ps47NewsCategory" required><option value="Penutupan">Penutupan</option><option value="Renovasi">Renovasi</option><option value="Jam operasional">Jam operasional</option><option value="Pengumuman">Pengumuman</option></select></label>
+                <label class="ps47-full">Judul pengumuman<input id="ps47NewsTitle" maxlength="100" minlength="8" required placeholder="Contoh: Penyesuaian akses masuk parkiran"></label>
+                <label class="ps47-full">Ringkasan berita (maks. 200 karakter)<textarea id="ps49NewsSummary" rows="2" maxlength="200" placeholder="Ringkasan singkat untuk kartu pengumuman"></textarea></label>
+                <label class="ps47-full">Isi berita<textarea id="ps47NewsBody" rows="5" maxlength="3000" minlength="20" required placeholder="Jelaskan lokasi yang terdampak, waktu berlaku, dan informasi bagi pengunjung."></textarea></label>
+                <label>Berlaku sampai (opsional)<input id="ps49NewsExpiry" type="datetime-local"><small>Kosongkan jika tanpa tanggal akhir.</small></label>
+                <label class="ps47-full ps47-upload">Gambar pendukung (opsional)<input id="ps47NewsImage" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG, atau WebP • Maksimum 5 MB • foto tersimpan di Supabase Storage</small></label>
+              </div>
+              <div class="ps49-news-actions">
+                <button id="ps49Preview" type="button" class="ps47-preview-btn">Pratinjau</button>
+                <button id="ps49SaveDraft" type="button" class="ps49-action ps49-draft">Simpan Draft</button>
+                <button id="ps49Publish" type="button" class="ps49-action ps49-publish">Publikasikan</button>
+                <button id="ps49Clear" type="button" class="ps49-action ps49-clear">Form Baru</button>
+              </div><p class="ps49-form-hint">Berita yang dipublikasikan terlihat oleh semua pengunjung. Pastikan zona dan masa berlakunya sudah benar.</p>
+            </form>
+            <article id="ps47NewsPreview" class="ps47-news-preview hidden" aria-live="polite">
+              <div class="ps47-preview-media" id="ps47PreviewMedia"><span>Pratinjau gambar</span></div><div class="ps47-preview-copy"><span id="ps47PreviewMeta">—</span><h3 id="ps47PreviewTitle">—</h3><p id="ps47PreviewBody">—</p><small>Pratinjau sebelum menyimpan atau menerbitkan.</small></div>
+            </article>
+            <section class="ps49-list-wrap" aria-labelledby="ps49MineHeading">
+              <div class="ps49-list-head"><div><h3 id="ps49MineHeading">Berita yang dapat Anda kelola</h3><p>Draft, berita terbit, dan arsip dari zona yang ditugaskan.</p></div><button id="ps49Reload" type="button" class="ps49-action ps49-clear">Muat ulang</button></div>
+              <div id="ps49NewsList" class="ps49-news-list" aria-live="polite"><p>Belum memuat berita.</p></div>
+            </section>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="loginModal"><section class="login-modal" role="dialog" aria-modal="true" aria-labelledby="loginHeading"><button class="modal-x" type="button" id="closeLogin" aria-label="Tutup">×</button><div class="login-symbol"><img src="assets/makara/ui.png" width="48" height="48" alt="Makara Universitas Indonesia"></div><p class="eyebrow">AKSES TERBATAS</p><h2 id="loginHeading">Masuk sebagai petugas</h2><p>Hanya akun petugas yang ditugaskan yang dapat mengubah jumlah kendaraan dan kapasitas pada zonanya.</p><form id="loginForm"><label>Email petugas<input id="loginEmail" type="email" required autocomplete="username" placeholder="petugas@contoh.com"></label><label>Kata sandi<input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi" minlength="6"></label><button class="login-submit" id="loginSubmit" type="submit">Masuk ke dashboard →</button><p class="login-error hidden" id="loginError" role="alert"></p></form><div class="login-hint" id="loginHint">Akun petugas dibuat oleh pengelola melalui Supabase, bukan pendaftaran publik.</div></section></div>
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+</body>
+</html>
